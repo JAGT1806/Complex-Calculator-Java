@@ -161,11 +161,16 @@ public class ComplexCalculator {
                 + ") / (" + z2.showComplexPolar() + ")");
                 z3.divComplexPolar(z1, z2);
             } case 3 -> {
-
+                int exp = Integer.parseInt(JOptionPane.showInputDialog(null, "Exponente (valor entero: "));
+                JOptionPane.showMessageDialog(null, "OPERACIÓN: (" + z1.showComplexPolar()
+                + ") ^ " + exp); // r ^n
+                z3.powComplexPolar(z1, exp);
             } case 4 -> {
                 
             } case 5 -> {
-                
+                z3 = z1.toBinomic();
+                JOptionPane.showMessageDialog(null, "Resultado = " + z3.showComplexBinomic());
+                menuPolar();
             }
         }
         
@@ -237,7 +242,7 @@ public class ComplexCalculator {
         return show;
     }
     
-      // Método de suma para números complejos binómicos
+      // Método para números complejos binómicos
     public ComplexCalculator addComplexBinomic(ComplexCalculator Z1, ComplexCalculator Z2) {
         this.real = Z1.real + Z2.real;
         this.imaginario = Z1.imaginario + Z2.imaginario;       
@@ -284,6 +289,7 @@ public class ComplexCalculator {
         return this;
     }
     
+      // Método para los complejos polares
     public ComplexCalculator mulComplexPolar(ComplexCalculator Z1, ComplexCalculator Z2) {
         this.modulo = Z1.modulo * Z2.modulo;
         this.angulo = Z1.angulo + Z2.angulo;
@@ -293,6 +299,23 @@ public class ComplexCalculator {
     public ComplexCalculator divComplexPolar(ComplexCalculator Z1, ComplexCalculator Z2) {
         this.modulo = Math.round( (Z1.modulo / Z2.modulo) * 100.0 ) / 100.0; // Aproximación de dos dígitos
         this.angulo = Z1.angulo - Z2.angulo;
+        return this;
+    }
+    
+    public ComplexCalculator powComplexPolar(ComplexCalculator Z1, int exp) {
+        this.modulo = Math.pow(Z1.modulo, exp);
+        this.angulo = Z1.angulo * exp;
+        return this;
+    }
+    
+    public ComplexCalculator toBinomic() {
+        double anguloRadian = this.angulo;
+        anguloRadian = Math.toRadians(anguloRadian);
+        
+        this.real = this.modulo * Math.cos(anguloRadian); // a = r cos O
+        this.real = Math.round(this.real * 100.0) / 100.0;
+        this.imaginario = this.modulo * Math.sin(anguloRadian); // b = r sin O 
+        this.imaginario = Math.round(this.imaginario * 100.0) / 100.0;
         return this;
     }
 }
