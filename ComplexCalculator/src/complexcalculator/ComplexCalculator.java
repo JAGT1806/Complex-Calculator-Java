@@ -75,7 +75,7 @@ public class ComplexCalculator {
                 menu(); // Regresa al menú
             }
             default -> {
-                JOptionPane.showMessageDialog(null, "Opción errónea\n");
+                JOptionPane.showMessageDialog(null, "¡Opción errónea!");
                 menuBinomic(); // Se vuelve a repetir
             }
         }
@@ -125,18 +125,52 @@ public class ComplexCalculator {
                                                    
                          OPCIÓN: """));
         
-
+        ComplexCalculator z1 = new ComplexCalculator(); // Objeto principal
+        ComplexCalculator z2 = new ComplexCalculator(); // Objeto secundario para opciones 1 y 2
+        
+        // Lectura de números complejos
         switch(optionPolar) {
-            case 1 -> {} 
-            case 2 -> {} 
-            case 3 -> {}
-            case 4 -> {}
-            case 0 -> {menu();} // Regresa al menu
+            case 1, 2 -> { 
+                int i = 1;
+                z1 = makePolar(i); // Z1 : r1 cis O1
+                i++;
+                z2 = makePolar(i); // Z2 : r2 cis O2
+            }
+            case 3, 4, 5 ->  {
+                z1 = makePolar(1); // Z1 : r cis O
+            }
+            case 0 -> {
+                menu(); // Regresa al menú
+            }
             default -> {
-                JOptionPane.showMessageDialog(null, "Opción errónea\n");
+                JOptionPane.showMessageDialog(null, "¡Opción erróneoa!");
                 menuPolar(); // Se vuelve a repetir
             }
         }
+        
+        ComplexCalculator z3 = new ComplexCalculator();
+        
+        // Aplicar operaciones
+        switch(optionPolar) {
+            case 1 -> {
+                JOptionPane.showMessageDialog(null, "OPERACIÓN: (" + z1.showComplexPolar()
+                + ") * (" + z2.showComplexPolar() + ")");
+                z3.mulComplexPolar(z1, z2);
+            } case 2 -> {
+                JOptionPane.showMessageDialog(null, "OPERACIÓN: (" + z1.showComplexPolar()
+                + ") / (" + z2.showComplexPolar() + ")");
+                z3.divComplexPolar(z1, z2);
+            } case 3 -> {
+
+            } case 4 -> {
+                
+            } case 5 -> {
+                
+            }
+        }
+        
+        JOptionPane.showMessageDialog(null, "Resultado = " + z3.showComplexPolar());
+        menuPolar();
         
     }
     
@@ -150,6 +184,20 @@ public class ComplexCalculator {
                                                                                              >> Valor imaginario: """));
         
         JOptionPane.showMessageDialog(null, "Número complejo: " + Z.showComplexBinomic());
+        
+        return Z;
+    }
+    
+          // Método para crear un número complejo polar
+    public static ComplexCalculator makePolar(int i) { // Complejo : r cis O
+        ComplexCalculator Z = new ComplexCalculator(); // Objeto complejo
+        
+        Z.modulo = Double.parseDouble(JOptionPane.showInputDialog(null, "Z" + i + "\n" + """
+                                                                                       >> Módulo: """));
+        Z.angulo = Double.parseDouble(JOptionPane.showInputDialog(null, "Z" + i + "\n" + """
+                                                                                             >> Ángulo: """));
+        
+        JOptionPane.showMessageDialog(null, "Número complejo: " + Z.showComplexPolar());
         
         return Z;
     }
@@ -233,6 +281,18 @@ public class ComplexCalculator {
         
         this.angulo = Math.atan(this.imaginario / this.real);
         this.angulo = Math.round(Math.toDegrees(this.angulo) * 100.0) / 100.0; // Redondea a 2 decimales
+        return this;
+    }
+    
+    public ComplexCalculator mulComplexPolar(ComplexCalculator Z1, ComplexCalculator Z2) {
+        this.modulo = Z1.modulo * Z2.modulo;
+        this.angulo = Z1.angulo + Z2.angulo;
+        return this;
+    }
+    
+    public ComplexCalculator divComplexPolar(ComplexCalculator Z1, ComplexCalculator Z2) {
+        this.modulo = Math.round( (Z1.modulo / Z2.modulo) * 100.0 ) / 100.0; // Aproximación de dos dígitos
+        this.angulo = Z1.angulo - Z2.angulo;
         return this;
     }
 }
