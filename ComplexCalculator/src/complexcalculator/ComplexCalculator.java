@@ -7,12 +7,12 @@ import javax.swing.JOptionPane; // Import the librarie JOptionPane
  */
 public class ComplexCalculator {
     // Parte binómico
-    float real;
-    float imaginario;
+    double real;
+    double imaginario;
     
     // Parte polar
-    float modulo;
-    float angulo;
+    double modulo;
+    double angulo;
 
     public static void main(String[] args) {
         menu();
@@ -57,17 +57,58 @@ public class ComplexCalculator {
                          OPCIÓN: """));
         
 
+        ComplexCalculator z1 = new ComplexCalculator(); // Objeto principal
+        ComplexCalculator z2 = new ComplexCalculator(); // Objeto secundario para opciones 1, 2, 3 y 4
+        
+        // Lectura de números complejos
         switch(optionBinomic) {
-            case 1 -> {} 
-            case 2 -> {} 
-            case 3 -> {}
-            case 4 -> {}
-            case 0 -> {menu();} // Regresa al menu
+            case 1, 2, 3, 4 -> { 
+                int i = 1;
+                z1 = makeBinomic(i);// Z1 : a + bi
+                i++;
+                z2 = makeBinomic(i);// Z2 : c + di
+            }
+            case 5 ->  {
+                z1 = makeBinomic(1); // z1 : a + bi
+            }
+            case 0 -> {
+                menu(); // Regresa al menú
+            }
             default -> {
                 JOptionPane.showMessageDialog(null, "Opción errónea\n");
                 menuBinomic(); // Se vuelve a repetir
             }
         }
+        
+        ComplexCalculator z3 = new ComplexCalculator(); // Se crea el objeto Z3 que será el resultado
+        
+        // Aplicar operaciones
+        switch(optionBinomic) {
+            case 1 -> {
+                JOptionPane.showMessageDialog(null, "OPERACIÓN: (" + z1.showComplexBinomic()
+                + ") + (" + z2.showComplexBinomic() + ")\n");
+                z3.addComplexBinomic(z1, z2);
+            } case 2 -> {
+                JOptionPane.showMessageDialog(null, "OPERACIÓN: (" + z1.showComplexBinomic()
+                + ") + (" + z2.showComplexBinomic() + ")\n");
+                z3.resComplexBinomic(z1, z2);
+            } case 3 -> {
+                JOptionPane.showMessageDialog(null, "OPERACIÓN: (" + z1.showComplexBinomic()
+                + ") + (" + z2.showComplexBinomic() + ")\n");
+                z3.mulComplexBinomic(z1, z2);
+            } case 4 -> {
+                JOptionPane.showMessageDialog(null, "OPERACIÓN: (" + z1.showComplexBinomic()
+                + ") + (" + z2.showComplexBinomic() + ")\n");
+                z3.divComplexBinomic(z1, z2);
+            } case 5 -> {
+                z3 = z1.toPolar();
+                JOptionPane.showMessageDialog(null, "Resultado = " + z3.showComplexPolar());
+                menuBinomic();
+            }
+        }
+        
+        JOptionPane.showMessageDialog(null, "Resultado = " + z3.showComplexBinomic());
+        menuBinomic();
         
     }
     
@@ -97,6 +138,20 @@ public class ComplexCalculator {
             }
         }
         
+    }
+    
+      // Método para crear un número complejo binómico
+    public static ComplexCalculator makeBinomic(int i) {  // Complejo : a + bi
+        ComplexCalculator Z = new ComplexCalculator(); // Objeto complejo
+        
+        Z.real = Double.parseDouble(JOptionPane.showInputDialog(null, "Z" + i + "\n" + """
+                                                                                       >> Valor real: """));
+        Z.imaginario = Double.parseDouble(JOptionPane.showInputDialog(null, "Z" + i + "\n" + """
+                                                                                             >> Valor imaginario: """));
+        
+        JOptionPane.showMessageDialog(null, "Número complejo: " + Z.showComplexBinomic());
+        
+        return Z;
     }
     
     // Métodos dinámicos
@@ -132,5 +187,52 @@ public class ComplexCalculator {
         show = show + this.modulo + " cis" + "(" + this.angulo + ") "; // Z : r cis(O)
         
         return show;
+    }
+    
+      // Método de suma para números complejos binómicos
+    public ComplexCalculator addComplexBinomic(ComplexCalculator Z1, ComplexCalculator Z2) {
+        this.real = Z1.real + Z2.real;
+        this.imaginario = Z1.imaginario + Z2.imaginario;       
+        return this;
+    }
+    
+    public ComplexCalculator resComplexBinomic(ComplexCalculator Z1, ComplexCalculator Z2){
+        this.real = Z1.real - Z2.real;
+        this.imaginario = Z1.imaginario - Z2.imaginario; 
+        return this;
+    }
+    
+    public ComplexCalculator mulComplexBinomic(ComplexCalculator Z1, ComplexCalculator Z2) {
+        this.real = (Z1.real * Z2.real) - (Z1.imaginario * Z2.imaginario);
+        this.imaginario = (Z1.real * Z2.imaginario) + (Z1.imaginario * Z2.real);
+        return this;
+    }
+    
+    public ComplexCalculator divComplexBinomic(ComplexCalculator Z1, ComplexCalculator Z2) {
+        ComplexCalculator opuesto = new ComplexCalculator();
+        ComplexCalculator numerador = new ComplexCalculator();
+        
+        opuesto.real = Z2.real;
+        opuesto.imaginario = - Z2.imaginario;
+        
+        double denominador;
+        
+        numerador.mulComplexBinomic(Z1, opuesto);
+        
+        denominador = Math.pow(Z2.real, 2) + Math.pow(Z2.imaginario, 2);  // c² + d²
+        
+        
+        this.real = numerador.real / denominador;
+        this.imaginario = numerador.imaginario / denominador;
+        return this;
+    }
+    
+    public ComplexCalculator toPolar() {
+        this.modulo = Math.sqrt( Math.pow(this.real, 2) + Math.pow(this.imaginario, 2) ); // (a² + b²) ¹/²
+        this.modulo = Math.round(this.modulo * 100.0) / 100.0; // Redonde a dos decimales
+        
+        this.angulo = Math.atan(this.imaginario / this.real);
+        this.angulo = Math.round(Math.toDegrees(this.angulo) * 100.0) / 100.0; // Redondea a 2 decimales
+        return this;
     }
 }
