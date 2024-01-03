@@ -90,15 +90,15 @@ public class ComplexCalculator {
                 z3.addComplexBinomic(z1, z2);
             } case 2 -> {
                 JOptionPane.showMessageDialog(null, "OPERACIÓN: (" + z1.showComplexBinomic()
-                + ") + (" + z2.showComplexBinomic() + ")\n");
+                + ") - (" + z2.showComplexBinomic() + ")\n");
                 z3.resComplexBinomic(z1, z2);
             } case 3 -> {
                 JOptionPane.showMessageDialog(null, "OPERACIÓN: (" + z1.showComplexBinomic()
-                + ") + (" + z2.showComplexBinomic() + ")\n");
+                + ") * (" + z2.showComplexBinomic() + ")\n");
                 z3.mulComplexBinomic(z1, z2);
             } case 4 -> {
                 JOptionPane.showMessageDialog(null, "OPERACIÓN: (" + z1.showComplexBinomic()
-                + ") + (" + z2.showComplexBinomic() + ")\n");
+                + ") / (" + z2.showComplexBinomic() + ")\n");
                 z3.divComplexBinomic(z1, z2);
             } case 5 -> {
                 z3 = z1.toPolar();
