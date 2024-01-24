@@ -1,5 +1,7 @@
 package complexcalculator;
 import javax.swing.JOptionPane; // Import the librarie JOptionPane
+import java.util.ArrayList; // Import the class ArrayList
+import java.lang.StringBuilder; // Import the librerie StringBuilder
 
 /**
  *
@@ -12,7 +14,8 @@ public class ComplexCalculator {
     
     // Parte polar
     double modulo;
-    double angulo;
+    //double angulo;
+    ArrayList <Double> angulo = new ArrayList<>();
 
     public static void main(String[] args) {
         menu();
@@ -101,7 +104,7 @@ public class ComplexCalculator {
                 + ") / (" + z2.showComplexBinomic() + ")\n");
                 z3.divComplexBinomic(z1, z2);
             } case 5 -> {
-                z3 = z1.toPolar();
+                z3.toPolar(z1);
                 JOptionPane.showMessageDialog(null, "Resultado = " + z3.showComplexPolar());
                 menuBinomic();
             }
@@ -161,12 +164,15 @@ public class ComplexCalculator {
                 + ") / (" + z2.showComplexPolar() + ")");
                 z3.divComplexPolar(z1, z2);
             } case 3 -> {
-                int exp = Integer.parseInt(JOptionPane.showInputDialog(null, "Exponente (valor entero: "));
+                int exp = Integer.parseInt(JOptionPane.showInputDialog(null, "Exponente (valor entero): "));
                 JOptionPane.showMessageDialog(null, "OPERACIÓN: (" + z1.showComplexPolar()
                 + ") ^ " + exp); // r ^n
                 z3.powComplexPolar(z1, exp);
             } case 4 -> {
-                
+                int sqrt = Integer.parseInt(JOptionPane.showInputDialog(null, "Raíz (valor entero): "));
+                JOptionPane.showMessageDialog(null, "OPERACIÓN: (" + z1.showComplexPolar()
+                + ") ^ (1/" + sqrt + ")"); // r ^ (1/n)
+                z3.sqrtComplexPolar(z1, sqrt);
             } case 5 -> {
                 z3 = z1.toBinomic();
                 JOptionPane.showMessageDialog(null, "Resultado = " + z3.showComplexBinomic());
@@ -199,10 +205,17 @@ public class ComplexCalculator {
         
         Z.modulo = Double.parseDouble(JOptionPane.showInputDialog(null, "Z" + i + "\n" + """
                                                                                        >> Módulo: """));
-        Z.angulo = Double.parseDouble(JOptionPane.showInputDialog(null, "Z" + i + "\n" + """
-                                                                                             >> Ángulo: """));
         
-        JOptionPane.showMessageDialog(null, "Número complejo: " + Z.showComplexPolar());
+        if (Z.angulo.isEmpty()) { // Si está vacia, agrega un nuevo elemento
+            Z.angulo.add(Double.valueOf(JOptionPane.showInputDialog(null, "Z" + i + "\n" + """
+                                                                                                 >> Ángulo: """)));
+        } else {
+            Z.angulo.set(0, Double.valueOf(JOptionPane.showInputDialog(null, "Z" + i + "\n" + """
+                                                                                                    >> Ángulo: """)));
+        }
+        
+        JOptionPane.showMessageDialog(null, "Número complejo: " +  Z.showComplexPolar() );
+        // String.join("\f", Z.showComplexPolar() )
         
         return Z;
     }
@@ -235,11 +248,17 @@ public class ComplexCalculator {
     
       // Muestra el número complejo de forma polar
     public String showComplexPolar() {
-        String show = "";
+        ArrayList<String> show = new ArrayList<>();
         
-        show = show + this.modulo + " cis" + "(" + this.angulo + ") "; // Z : r cis(O)
+        if (!this.angulo.isEmpty()) { // Se encarga de verificar si tiene algun elemento
+            this.angulo.forEach((Double n) -> {
+                show.add(this.modulo + "cis( " + n + " )");
+            });
+        }     
         
-        return show;
+        String showString = convertirAString(show);
+        
+        return showString;
     }
     
       // Método para números complejos binómicos
@@ -280,36 +299,71 @@ public class ComplexCalculator {
         return this;
     }
     
-    public ComplexCalculator toPolar() {
+    public ComplexCalculator toPolar(ComplexCalculator Z1) {
         this.modulo = Math.sqrt( Math.pow(this.real, 2) + Math.pow(this.imaginario, 2) ); // (a² + b²) ¹/²
         this.modulo = Math.round(this.modulo * 100.0) / 100.0; // Redonde a dos decimales
         
-        this.angulo = Math.atan(this.imaginario / this.real);
-        this.angulo = Math.round(Math.toDegrees(this.angulo) * 100.0) / 100.0; // Redondea a 2 decimales
+        if (!this.angulo.isEmpty()) { // Si no está vacío, entonces escogerá el primer elemento
+            this.angulo.set(0, Math.atan(this.imaginario / this.real));
+            this.angulo.set(0, Math.round(Math.toDegrees(this.angulo.get(0)) * 100.0) / 100.0); // Redondea a 2 decimales
+        } 
         return this;
     }
     
       // Método para los complejos polares
     public ComplexCalculator mulComplexPolar(ComplexCalculator Z1, ComplexCalculator Z2) {
         this.modulo = Z1.modulo * Z2.modulo;
-        this.angulo = Z1.angulo + Z2.angulo;
+        
+        if (!this.angulo.isEmpty()) { // Si no está vacía, se guardará el resultado en el primer elemento
+            this.angulo.set(0, ( Z1.angulo.get(0) + Z2.angulo.get(0) ) );
+        } else {
+            this.angulo.add(0, ( Z1.angulo.get(0) + Z2.angulo.get(0) ) ); // Si está vacía se agrega un nuevo elemento
+        }
+        
         return this;
     }
     
     public ComplexCalculator divComplexPolar(ComplexCalculator Z1, ComplexCalculator Z2) {
         this.modulo = Math.round( (Z1.modulo / Z2.modulo) * 100.0 ) / 100.0; // Aproximación de dos dígitos
-        this.angulo = Z1.angulo - Z2.angulo;
+        
+        if (!this.angulo.isEmpty()) { // Si no está vacía, se guardará el resultado en el primer elemento
+            this.angulo.set(0, ( Z1.angulo.get(0) - Z2.angulo.get(0) ) );
+        } else {
+            this.angulo.add(0, ( Z1.angulo.get(0) - Z2.angulo.get(0) ) ); // Si está vacía se agrega un nuevo elemento
+        }
+        
         return this;
     }
     
     public ComplexCalculator powComplexPolar(ComplexCalculator Z1, int exp) {
         this.modulo = Math.pow(Z1.modulo, exp);
-        this.angulo = Z1.angulo * exp;
+        
+        if (!this.angulo.isEmpty()) { // Si no está vacío, el resultado se guardará en la primera posición
+            this.angulo.set(0, Z1.angulo.get(0) * exp);
+        } else { // Si está vacío, se añade el resultado al ArrayList
+            this.angulo.add(Z1.angulo.get(0) * exp);
+        }
+        
+        return this;
+    }
+    
+    public ComplexCalculator sqrtComplexPolar(ComplexCalculator Z1, int n) {
+        this.modulo = Math.pow(Z1.modulo, 1/n);
+        this.modulo = Math.round(this.modulo * 100.0) / 100.0;
+        
+        this.angulo.clear(); // Vacia el ArrayList de angulo en caso de estar lleno
+        
+        if (this.angulo.isEmpty()) {
+            for (int i = 0; i < n; i++) { // El valor del ángulo será igual al valor del exponente de la raíz
+                this.angulo.add(Math.round( ( (Z1.angulo.get(0) + 360*i) / n ) * 100.0 ) / 100.0);
+            }
+        }
+        
         return this;
     }
     
     public ComplexCalculator toBinomic() {
-        double anguloRadian = this.angulo;
+        double anguloRadian = this.angulo.get(0);
         anguloRadian = Math.toRadians(anguloRadian);
         
         this.real = this.modulo * Math.cos(anguloRadian); // a = r cos O
@@ -317,5 +371,17 @@ public class ComplexCalculator {
         this.imaginario = this.modulo * Math.sin(anguloRadian); // b = r sin O 
         this.imaginario = Math.round(this.imaginario * 100.0) / 100.0;
         return this;
+    }
+    
+    private static String convertirAString(ArrayList<String> lista) {
+        StringBuilder resultado = new StringBuilder();
+        for (String elemento : lista) {
+            resultado.append(elemento).append("\n");
+        }
+        // Eliminar el último \f si no se quiere incluir al final
+        /*if (resultado.length() > 0) {
+            resultado.setLength(resultado.length() - 2); // Elimina los últimos 2 caracteres (\f y el espacio)
+        }*/
+        return resultado.toString();
     }
 }
